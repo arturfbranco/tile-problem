@@ -8,16 +8,6 @@ const SubMatrix = {
 }
 
 function Coordinates(n: number){
-    if(n === 2){
-        return{
-            innerCorners: {
-                upLeft: [0, 0],
-                upRight: [0, 1],
-                bottomLeft: [1, 0],
-                bottomRight: [1, 1]
-,           }
-        }
-    }
     return{
         innerCorners: {
             upLeft: [n/2 - 1, n/2 - 1],
@@ -35,30 +25,6 @@ function Coordinates(n: number){
 
 }
 
-function fixMissing(missing: number[]): number[] {
-    let i = missing[0];
-    let j = missing[1];
-    while(i > 3){
-        i -= 2;
-    }
-    while(j > 3){
-        j -= 2;
-    }
-    for(let index = 0; index <= 3; index++){
-        const valueForI = index < 2 ? index : index - 2;
-        if(i === index && j === 0){
-            return [valueForI, 0]
-        } else if(i === index && j === 1){
-            return [valueForI, 1];
-        } else if(i === index && j === 2){
-            return [valueForI, 0];
-        } else if(i === index && j === 3){
-            return [valueForI, 1]
-        }
-    }
-    throw new Error("i out of bounds.");
-}
-
 function processRealMissing(n: number, missing: number[]): number[] {
     const realMissing = [...missing];
     while(realMissing[0] >= n){
@@ -68,41 +34,6 @@ function processRealMissing(n: number, missing: number[]): number[] {
         realMissing[1] = realMissing[1] - n;
     }
     return realMissing;
-}
-    
-function fill(matrix: number[][], missing: number[]):number[][]{
-    const n = matrix.length;
-    const originalI = missing[0];
-    const originalJ = missing[1];
-    const realMissing = processRealMissing(matrix.length, missing);
-    if(matrix.length === 2){
-        return fillBaseCase(realMissing[0], realMissing[1]);
-    }
-    const newMissing = getMissingPositions(n, realMissing[0], realMissing[1]);
-    const q1 = fill(getSubMatrix(matrix, SubMatrix.Q1), newMissing.q1 ? newMissing.q1 : realMissing);
-    const q2 = fill(getSubMatrix(matrix, SubMatrix.Q2), newMissing.q2 ? newMissing.q2 : realMissing);
-    const q3 = fill(getSubMatrix(matrix, SubMatrix.Q3), newMissing.q3 ? newMissing.q3 : realMissing);
-    const q4 = fill(getSubMatrix(matrix, SubMatrix.Q4), newMissing.q4 ? newMissing.q4 : realMissing);
-    
-    const filledMatrix = mergeMatrixes(q1, q2, q3, q4);
-
-    if(newMissing.q1){
-        filledMatrix[newMissing.q1[0]][newMissing.q1[1]] = currentValue;
-    }
-    if(newMissing.q2){
-        filledMatrix[newMissing.q2[0]][newMissing.q2[1]] = currentValue;
-    }
-    if(newMissing.q3){
-        filledMatrix[newMissing.q3[0]][newMissing.q3[1]] = currentValue;
-    }
-    if(newMissing.q4){
-        filledMatrix[newMissing.q4[0]][newMissing.q4[1]] = currentValue;
-    }
-    currentValue++;
-    
-
-    return filledMatrix;
-
 }
 
 function mergeMatrixes(q1: number[][], q2: number[][], q3: number[][], q4: number[][]): number[][] {
@@ -194,17 +125,56 @@ function fillBaseCase(missI: number, missJ: number): number[][] {
     return matrix;
 }
 
-const sample = [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0]    
-];
+function fill(matrix: number[][], missing: number[]):number[][]{
+    const n = matrix.length;
+    const realMissing = processRealMissing(n, missing);
+    if(n === 2){
+        return fillBaseCase(realMissing[0], realMissing[1]);
+    }
+    const newMissing = getMissingPositions(n, realMissing[0], realMissing[1]);
+    const q1 = fill(getSubMatrix(matrix, SubMatrix.Q1), newMissing.q1 ? newMissing.q1 : realMissing);
+    const q2 = fill(getSubMatrix(matrix, SubMatrix.Q2), newMissing.q2 ? newMissing.q2 : realMissing);
+    const q3 = fill(getSubMatrix(matrix, SubMatrix.Q3), newMissing.q3 ? newMissing.q3 : realMissing);
+    const q4 = fill(getSubMatrix(matrix, SubMatrix.Q4), newMissing.q4 ? newMissing.q4 : realMissing);
+    
+    const filledMatrix = mergeMatrixes(q1, q2, q3, q4);
 
-console.log(sample);
-const filledSample = fill(sample, [6, 5]);
-console.log(filledSample);
+    if(newMissing.q1){
+        filledMatrix[newMissing.q1[0]][newMissing.q1[1]] = currentValue;
+    }
+    if(newMissing.q2){
+        filledMatrix[newMissing.q2[0]][newMissing.q2[1]] = currentValue;
+    }
+    if(newMissing.q3){
+        filledMatrix[newMissing.q3[0]][newMissing.q3[1]] = currentValue;
+    }
+    if(newMissing.q4){
+        filledMatrix[newMissing.q4[0]][newMissing.q4[1]] = currentValue;
+    }
+    currentValue++;
+    
+
+    return filledMatrix;
+
+}
+
+
+function solveTileProblem(n: number, missingI: number, missingJ: number): number[][] {
+    if(missingI >= n || missingJ >= n){
+        throw new Error("Missing tile out of bounds.");
+    }
+    const matrix: number[][] = [];
+    currentValue = 1;
+    for(let i = 0; i < n; i++){
+        matrix[i] = [];
+        for(let j = 0; j < n; j++){
+            matrix[i][j] = 0;
+        }
+    }
+    const solvedMatrix = fill(matrix, [missingI, missingJ]);
+    currentValue = 1;
+    return solvedMatrix;
+}
+
+const solvedValue = solveTileProblem(64, 10, 10)
+console.log(solvedValue)
