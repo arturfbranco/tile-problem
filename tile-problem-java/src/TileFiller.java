@@ -1,11 +1,12 @@
 import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TileFiller {
 
-    public List<List<Integer>> solveTileProblem( Integer n, Integer iMissing, Integer jMissing ){
+    public List<List<Integer>> solveTileProblem( Integer n, Integer iMissing, Integer jMissing ) throws Exception {
         List<List<Integer>> matrix = new ArrayList<>();
         for(int i = 0; i < n; i++){
             List<Integer> line = new ArrayList<>();
@@ -19,16 +20,56 @@ public class TileFiller {
         return solvedMatrix;
     }
 
-    private List<List<Integer>> fillMatrix(List<List<Integer>> matrix, List<Integer> missingPosition){
+    private List<List<Integer>> fillMatrix(List<List<Integer>> matrix, List<Integer> missingPosition) throws Exception {
         Integer n = matrix.size();
         List<Integer> realMissingPosition = this.processRealMissing(n, missingPosition);
         if(n.equals(2)){
             return this.fillBaseCase(realMissingPosition);
         }
-        MissingQuadrants missing = this.getMissingPositions(n, realMissingPosition.get(0), realMissingPosition.get(1));
+        MissingQuadrants newMissing = this.getMissingPositions(n, realMissingPosition.get(0), realMissingPosition.get(1));
+        List<List<Integer>> q1 = this.fillMatrix(getSubMatrix(matrix, SubMatrix.Q1), newMissing.getQ1() != null ? newMissing.getQ1() : realMissingPosition);
+        List<List<Integer>> q2 = this.fillMatrix(getSubMatrix(matrix, SubMatrix.Q2), newMissing.getQ2() != null ? newMissing.getQ2() : realMissingPosition);
+        List<List<Integer>> q3 = this.fillMatrix(getSubMatrix(matrix, SubMatrix.Q3), newMissing.getQ3() != null ? newMissing.getQ3() : realMissingPosition);
+        List<List<Integer>> q4 = this.fillMatrix(getSubMatrix(matrix, SubMatrix.Q4), newMissing.getQ4() != null ? newMissing.getQ4() : realMissingPosition);
 
-        // Continuar daqui................
+        List<List<Integer>> filledMatrix = mergeMatrixes(q1, q2, q3, q4);
+        Integer value = Counter.next();
+        if(newMissing.getQ1() != null){
+            filledMatrix.get(newMissing.getQ1().get(0)).set(newMissing.getQ1().get(1), value);
+        }
+        if(newMissing.getQ2() != null){
+            filledMatrix.get(newMissing.getQ2().get(0)).set(newMissing.getQ2().get(1), value);
+        }
+        if(newMissing.getQ3() != null){
+            filledMatrix.get(newMissing.getQ3().get(0)).set(newMissing.getQ3().get(1), value);
+        }
+        if(newMissing.getQ4() != null){
+            filledMatrix.get(newMissing.getQ4().get(0)).set(newMissing.getQ4().get(1), value);
+        }
+        return filledMatrix;
     }
+
+
+    private List<List<Integer>> mergeMatrixes(List<List<Integer>> q1, List<List<Integer>> q2, List<List<Integer>> q3, List<List<Integer>> q4){
+        List<List<Integer>> upperMatrix = new ArrayList<>();
+        for(int i = 0; i < q1.size(); i++){
+            List<Integer> line = new ArrayList<>(q1.get(i));
+            line.addAll(q2.get(i));
+            upperMatrix.add(line);
+        }
+        List<List<Integer>> lowerMatrix = new ArrayList<>();
+        for(int i = 0; i < q3.size(); i++){
+            List<Integer> line = new ArrayList<>(q3.get(i));
+            line.addAll(q4.get(i));
+            lowerMatrix.add(line);
+        }
+
+        List<List<Integer>> mergedMatrix = new ArrayList<>();
+        mergedMatrix.addAll(upperMatrix);
+        mergedMatrix.addAll(lowerMatrix);
+        return mergedMatrix;
+    }
+
 
     private List<List<Integer>> getSubMatrix(List<List<Integer>> matrix, SubMatrix quadrant) throws Exception {
         Coordinates coordinates = new Coordinates(matrix.size());
@@ -62,7 +103,7 @@ public class TileFiller {
             for(int j = jStart; j <= jEnd; j++){
                 line.add(matrix.get(i).get(j));
             }
-            matrix.add(line);
+            subMatrix.add(line);
         }
         return subMatrix;
     }
