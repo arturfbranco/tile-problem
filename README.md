@@ -15,7 +15,7 @@ As peças faltantes "falsas" são preenchidas corretamente, deixando apenas a pe
 
 Essa abordagem divide e conquista permite preencher o tabuleiro de maneira eficiente, garantindo que a peça faltante esteja localizada corretamente na matriz final.
 
-### Instruções para execução do programa Java: 
+### Instruções para execução do programa Java (algoritmo final): 
 A execução do programa é muito simples basta rodar a classe main pelas interfaces de inicialização de sua IDE ou rodar os seguintes comandos no terminal dentro da pasta src:
 ```
 javac Main.java
@@ -28,4 +28,4 @@ java Main.class
 npx tsc index.ts
 node index.js
 ```
-Por este programa ter se tratado de uma PoC realizada para projetar a estrutura do algoritmo implementado em Java na sequência, este código trata-se apenas do algoritmo puro, sem atenção para os meios de comunicação com o usuário (input e output no terminal). Dessa forma, é exigido que o tamanho da matriz, e as coordenadas i e j da peça faltante sejam informadas diretamente na linha 179 do arquivo index.ts.
+Por o programa Typescript ter se tratado de uma PoC realizada para projetar a estrutura do algoritmo implementado em Java na sequência, este código trata-se apenas do algoritmo puro, sem atenção para os meios de comunicação com o usuário (input e output no terminal). Dessa forma, é exigido que o tamanho do lado da matriz, e as coordenadas i e j da posição proibida sejam informadas diretamente na linha 179 do arquivo index.ts.
