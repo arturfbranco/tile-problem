@@ -77,26 +77,6 @@ public class TileFiller {
             row.addAll(q4.get(i));
             mergedMatrix.add(row);
         }
-
-        // Verificar se há linhas adicionais devido a n sendo ímpar
-        if (n % 2 != 0) {
-            int m = n / 2;
-
-            // Adicionar linhas extras para o quadrante Q1
-            for (int i = m; i < n; i++) {
-                List<Integer> row = new ArrayList<>(mergedMatrix.get(i).subList(0, m));
-                row.addAll(Collections.nCopies(m, 0));
-                mergedMatrix.add(row);
-            }
-
-            // Adicionar linhas extras para o quadrante Q3
-            for (int i = 0; i < m; i++) {
-                List<Integer> row = new ArrayList<>(Collections.nCopies(m, 0));
-                row.addAll(mergedMatrix.get(i + m).subList(m, n));
-                mergedMatrix.add(row);
-            }
-        }
-
         return mergedMatrix;
     }
 
