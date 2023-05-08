@@ -157,7 +157,7 @@ public class TileFiller {
             }
             matrix.add(row);
         }
-
+        CURRENT_VALUE++;
         return matrix;
     }
 
